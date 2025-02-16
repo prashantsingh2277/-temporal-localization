@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Live Video & Activity Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <h1>Live Video Feed</h1>
+    <img src="/video_feed" style="width:100%; max-width:600px;">
+    
+    <h2>Real Time Activity Analytics</h2>
+    <canvas id="analyticsChart" width="600" height="400"></canvas>
+    
+    <script>
+      // Initialize the Chart.js chart.
+      const ctx = document.getElementById('analyticsChart').getContext('2d');
+      const analyticsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Boundary',
+            data: [],
+            borderColor: 'rgba(255, 99, 132, 1)',
+            fill: false
+          },
+          {
+            label: 'Segment',
+            data: [],
+            borderColor: 'rgba(54, 162, 235, 1)',
+            fill: false
+          }]
+        },
+        options: {
+          responsive: false,
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'second'
+              },
+              title: {
+                display: true,
+                text: 'Time'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Value'
+              }
+            }
+          }
+        }
+      });
+      
+      // Function to fetch analytics data from the server and update the chart.
+      async function updateAnalytics() {
+        const response = await fetch('/analytics');
+        const data = await response.json();
+        
+        // Update chart data.
+        analyticsChart.data.labels = data.map(point => new Date(point.time * 1000));
+        analyticsChart.data.datasets[0].data = data.map(point => point.boundary);
+        analyticsChart.data.datasets[1].data = data.map(point => point.segment);
+        analyticsChart.update();
+      }
+      
+      // Update the analytics every 2 seconds.
+      setInterval(updateAnalytics, 2000);
+    </script>
+  </body>
+</html>
