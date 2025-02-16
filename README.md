@@ -107,25 +107,23 @@ This custom architecture balances simplicity and effectiveness by drawing inspir
 
 ---
 
-## Pipeline Summary
+## Overall Pipeline Summary
 
-```mermaid
-flowchart TD
-    A[Download Dataset (data_preparition.py)]
-    B[Create Small Dataset Subset]
-    C[Extract Preprocessed Video Features (.npy files)]
-    D[Define Custom Model Architecture (model.py)]
-    E[Train Model with Dummy Labels (train.py)]
-    F[Save Trained Checkpoint (model_checkpoint.pth)]
-    G[Export Model for Deployment (model_export.py)]
-    H[Real-Time Inference Server (streaming_server.py)]
-    I[Web Interface with Video Feed & Analytics (index.html)]
-    
-    A --> B
-    B --> C
-    C --> E
-    D --> E
-    E --> F
-    F --> G
-    F --> H
-    H --> I
+- **Data Acquisition & Preparation:**  
+  The project starts by downloading and subsampling a large video dataset to a manageable size. Pre-extracted video features are stored as `.npy` files.
+
+- **Model Development:**  
+  A custom temporal localization model is defined to balance efficiency and accuracy. It captures both local details (using convolutions) and global context (using self-attention), and uses separate regression heads for precise boundary and segment predictions.
+
+- **Training & Export:**  
+  The model is trained using the pre-extracted features and dummy labels. After training, the model checkpoint is saved and exported in deployable formats.
+
+- **Real-Time Inference & Visualization:**  
+  A Flask-based real-time inference server processes live webcam video:
+  - It extracts features from each frame.
+  - Buffers features over a fixed number of frames to form a clip.
+  - Runs the clip through the model to generate temporal predictions.
+  - Overlays predictions on the live video feed.
+  - Provides real-time analytics, which are visualized on a web interface using Chart.js.
+
+This modular pipeline effectively demonstrates an end-to-end solution for temporal action localization—from data preparation and model training to real-time inference and analytics visualization.
